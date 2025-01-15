@@ -129,7 +129,7 @@ def DisplayTargets(Targets):
 
 def ConvertToRPN(UserInput):
     Position = 0
-    Precedence = {"+": 2, "-": 2, "*": 4, "/": 4}
+    Precedence = {"+": 2, "-": 2, "*": 4, "/": 4, "^": 5}
     Operators = []
     Operand, Position = GetNumberFromUserInput(UserInput, Position)
     UserInputInRPN = []
@@ -156,7 +156,7 @@ def ConvertToRPN(UserInput):
 def EvaluateRPN(UserInputInRPN):
     S = []
     while len(UserInputInRPN) > 0:
-        while UserInputInRPN[0] not in ["+", "-", "*", "/"]:
+        while UserInputInRPN[0] not in ["+", "-", "*", "/", "^"]:
             S.append(UserInputInRPN[0])
             UserInputInRPN.pop(0)        
         Num2 = float(S[-1])
@@ -172,6 +172,9 @@ def EvaluateRPN(UserInputInRPN):
             Result = Num1 * Num2
         elif UserInputInRPN[0] == "/":
             Result = Num1 / Num2
+        elif UserInputInRPN[0] == "^":
+            Result = Num1 ** Num2
+
         UserInputInRPN.pop(0)
         S.append(str(Result))       
     if float(S[0]) - math.floor(float(S[0])) == 0.0:
@@ -196,7 +199,7 @@ def GetNumberFromUserInput(UserInput, Position):
         return int(Number), Position    
 
 def CheckIfUserInputValid(UserInput):
-    if re.search("^([0-9]+[\\+\\-\\*\\/])+[0-9]+$", UserInput) is not None:
+    if re.search("^([0-9]+[\\+\\-\\*\\/\\^])+[0-9]+$", UserInput) is not None:
         return True
     else:
         return False
