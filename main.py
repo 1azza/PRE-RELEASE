@@ -207,10 +207,15 @@ def GetTarget(MaxTarget):
 def GetNumber(MaxNumber):
     return random.randint(1, MaxNumber)   
 
-def CreateTargets(SizeOfTargets, MaxTarget):
+def CreateTargets(SizeOfTargets, MaxTarget, hardmode=True):
     Targets = []
     for Count in range(1, 6):
         Targets.append(-1)
+    if hardmode:
+        sample = list(range(1, MaxTarget))
+        random.shuffle(sample)
+        Targets.extend(sample[:SizeOfTargets-4])
+        return Targets
     for Count in range(1, SizeOfTargets - 4):
         Targets.append(GetTarget(MaxTarget))
     return Targets
