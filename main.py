@@ -28,11 +28,28 @@ def Main():
     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
-    
+
+
+
+def ReadFile():
+    with open('high_score.txt', 'r') as file:
+        data = file.read()
+    return data
+def UpdateHighScore(Score):
+    with open("high_score.txt", "r") as file:
+        HighScore = file.read()
+    if int(Score) > int(HighScore):
+        with open("high_score.txt", "w") as file:
+            file.write(str(Score))
+        return True
+    return False
+
+
 def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
     while not GameOver:
+        UpdateHighScore(Score)
         DisplayState(Targets, NumbersAllowed, Score)
         UserInput = input("Enter an expression: ")
         print()
@@ -49,7 +66,9 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
         else:
             Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)        
     print("Game over!")
-    DisplayScore(Score)
+    UpdateHighScore(Score)
+    HighScore = int(ReadFile())
+    DisplayScore(Score, HighScore)
 
 def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
     UserInputEvaluation = EvaluateRPN(UserInputInRPN)
@@ -102,10 +121,12 @@ def CheckValidNumber(Item, MaxNumber):
 def DisplayState(Targets, NumbersAllowed, Score):
     DisplayTargets(Targets)
     DisplayNumbersAllowed(NumbersAllowed)
-    DisplayScore(Score)    
+    HighScore = ReadFile()
+    DisplayScore(Score, HighScore)    
 
-def DisplayScore(Score):
+def DisplayScore(Score, HighScore):
     print("Current score: " + str(Score))
+    print("High score: " + str(HighScore))
     print()
     print()
     
@@ -129,25 +150,34 @@ def DisplayTargets(Targets):
 
 def ConvertToRPN(UserInput):
     Position = 0
+    # Assigning dicitonary to precedence variable, 
+    # the higher the value for each operator, 
+    # the sooner the expression with that operator will be executed
     Precedence = {"+": 2, "-": 2, "*": 4, "/": 4}
     Operators = []
+    # GetNumberFromUserInput() returns a tuplpe of two values, these can be assigned to to variables in one line
     Operand, Position = GetNumberFromUserInput(UserInput, Position)
     UserInputInRPN = []
     UserInputInRPN.append(str(Operand))
+    # Append the last character in the user input to the operators list
     Operators.append(UserInput[Position - 1])
     while Position < len(UserInput):
         Operand, Position = GetNumberFromUserInput(UserInput, Position)
         UserInputInRPN.append(str(Operand))
         if Position < len(UserInput):
             CurrentOperator = UserInput[Position - 1]
+            # Checking if the found operator being pushed onto the stack has lower or equal precedence as the operator as the top of the stack, 
+            # then the operator is popped off the stack and added to th output queue
             while len(Operators) > 0 and Precedence[Operators[-1]] > Precedence[CurrentOperator]:
                 UserInputInRPN.append(Operators[-1])
-                Operators.pop()                
+                Operators.pop()
+            # Checking if the found operator has equal importance as the current operator
             if len(Operators) > 0 and Precedence[Operators[-1]] == Precedence[CurrentOperator]:
                 UserInputInRPN.append(Operators[-1])
                 Operators.pop()    
             Operators.append(CurrentOperator)
         else:
+            # Pop the remaining operators and add to the output queue
             while len(Operators) > 0:
                 UserInputInRPN.append(Operators[-1])
                 Operators.pop()
