@@ -28,17 +28,13 @@ def Main():
     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
-
-
-
+    
 def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
     while not GameOver:
         DisplayState(Targets, NumbersAllowed, Score)
-        UserInput = input("Enter an expression (QUIT to quit): ")
-        if UserInput == 'QUIT':
-            break
+        UserInput = input("Enter an expression: ")
         print()
         if CheckIfUserInputValid(UserInput):
             UserInputInRPN = ConvertToRPN(UserInput)
@@ -47,12 +43,6 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
                 if IsTarget:
                     NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
                     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-                else:
-                    print('Please make sure expression evaluates to a target in the list')
-            else:
-               print('Please make sure all numbers entered are within the allowed set of numbers') 
-        else:
-            print('Please enter valid infix notation expression')
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
@@ -60,7 +50,6 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
             Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)        
     print("Game over!")
     DisplayScore(Score)
-    quit()
 
 def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
     UserInputEvaluation = EvaluateRPN(UserInputInRPN)
@@ -207,9 +196,6 @@ def GetNumberFromUserInput(UserInput, Position):
         return int(Number), Position    
 
 def CheckIfUserInputValid(UserInput):
-    if re.search("\/0", UserInput) is not None:
-        print('Please make sure you are not dividing by zero')
-        return False
     if re.search("^([0-9]+[\\+\\-\\*\\/])+[0-9]+$", UserInput) is not None:
         return True
     else:
