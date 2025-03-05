@@ -71,9 +71,8 @@ def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
     return NumbersAllowed
 
 def UpdateTargets(Targets, TrainingGame, MaxTarget):
-    for Count in range (0, len(Targets) - 1):
-        Targets[Count] = Targets[Count + 1]
-    Targets.pop()
+    Targets.append(Targets[-1])
+    Targets.pop(0)
     if TrainingGame:
         Targets.append(Targets[-1])
     else:
