@@ -13,23 +13,24 @@ def Main():
     MaxNumberOfTargets = 20
     MaxTarget = 0
     MaxNumber = 0
-    TrainingGame = False
-    Choice = input("Enter y to play the training game, anything else to play a random game: ").lower()
+    GameLevel = 0
+    Choice = input("Choose game level Training (0) Standard (1) Easy (2) Medium (3) Hard (4)").lower()
+    GameLevel = int(Choice)
     print()
-    if Choice == "y":
-        MaxNumber = 1000
-        MaxTarget = 1000
-        TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
+    if Choice == '0':
+            MaxNumber = 1000
+            MaxTarget = 1000
+            GameLevel = 0
+            Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
     else:
         MaxNumber = 10
         MaxTarget = 50
-        Targets = CreateTargets(MaxNumberOfTargets, MaxTarget)        
-    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-    PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
+        Targets = CreateTargets(MaxNumberOfTargets, MaxTarget,)        
+    NumbersAllowed = FillNumbers(NumbersAllowed, GameLevel, MaxNumber)
+    PlayGame(Targets, NumbersAllowed, GameLevel, MaxTarget, MaxNumber)
     input()
     
-def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
+def PlayGame(Targets, NumbersAllowed, GameLevel, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
     while not GameOver:
@@ -41,13 +42,13 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
             if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
                 IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
                 if IsTarget:
-                    NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
-                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+                    NumbersAllowed = []
+                    NumbersAllowed = FillNumbers(NumbersAllowed, GameLevel, MaxNumber)
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
         else:
-            Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)        
+            Targets = UpdateTargets(Targets, GameLevel, MaxTarget)        
     print("Game over!")
     DisplayScore(Score)
 
@@ -70,11 +71,10 @@ def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
                 NumbersAllowed.remove(int(Item))
     return NumbersAllowed
 
-def UpdateTargets(Targets, TrainingGame, MaxTarget):
-    for Count in range (0, len(Targets) - 1):
-        Targets[Count] = Targets[Count + 1]
-    Targets.pop()
-    if TrainingGame:
+def UpdateTargets(Targets, GameLevel, MaxTarget):
+    Targets.append(Targets[-1])
+    Targets.pop(0)
+    if GameLevel:
         Targets.append(Targets[-1])
     else:
         Targets.append(GetTarget(MaxTarget))
@@ -215,13 +215,18 @@ def CreateTargets(SizeOfTargets, MaxTarget):
         Targets.append(GetTarget(MaxTarget))
     return Targets
     
-def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
-    if TrainingGame:
+def FillNumbers(NumbersAllowed, GameLevel, MaxNumber):
+    num_of_large_map = {1:0, 2:1, 3:2, 4:4}
+    LargeNumbers = [ 25, 50, 75, 100 ]
+    if GameLevel == 0:
         return [2, 3, 2, 8, 512]
     else:
-        while len(NumbersAllowed) < 5:
-            NumbersAllowed.append(GetNumber(MaxNumber))      
+        for i in range(num_of_large_map[GameLevel]):
+            NumbersAllowed.append(LargeNumbers[i])
+        for i in range(0, 5 - num_of_large_map[GameLevel]):
+            NumbersAllowed.append(GetNumber(MaxNumber))
         return NumbersAllowed
+
 
 if __name__ == "__main__":
     Main()
