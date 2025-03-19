@@ -6,8 +6,9 @@
 import re
 import random
 import math
+from typing import List, Tuple, Optional, Union
 
-def Main():
+def Main() -> None:
     NumbersAllowed = []
     Targets = []
     MaxNumberOfTargets = 20
@@ -29,7 +30,7 @@ def Main():
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
     
-def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
+def PlayGame(Targets: List[int], NumbersAllowed: List[int], TrainingGame: bool, MaxTarget: int, MaxNumber: int) -> None:
     Score = 0
     GameOver = False
     while not GameOver:
@@ -51,18 +52,22 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     print("Game over!")
     DisplayScore(Score)
 
-def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
+def CheckIfUserInputEvaluationIsATarget(Targets: List[int], UserInputInRPN: List[str], Score: int) -> Tuple[bool, int]:
+    points = 0
+    for i in UserInputInRPN:
+        if i not in ["+", "-", "*", "/"]:
+            points += 2
     UserInputEvaluation = EvaluateRPN(UserInputInRPN)
     UserInputEvaluationIsATarget = False
     if UserInputEvaluation != -1:
         for Count in range(0, len(Targets)):
             if Targets[Count] == UserInputEvaluation:
-                Score += 2
+                Score += (2 + points)
                 Targets[Count] = -1
                 UserInputEvaluationIsATarget = True        
     return UserInputEvaluationIsATarget, Score
     
-def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
+def RemoveNumbersUsed(UserInput: str, MaxNumber: int, NumbersAllowed: List[int]) -> List[int]:
     UserInputInRPN = ConvertToRPN(UserInput)
     for Item in UserInputInRPN:
         if CheckValidNumber(Item, MaxNumber):
@@ -70,7 +75,7 @@ def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
                 NumbersAllowed.remove(int(Item))
     return NumbersAllowed
 
-def UpdateTargets(Targets, TrainingGame, MaxTarget):
+def UpdateTargets(Targets: List[int], TrainingGame: bool, MaxTarget: int) -> List[int]:
     for Count in range (0, len(Targets) - 1):
         Targets[Count] = Targets[Count + 1]
     Targets.pop()
@@ -80,7 +85,7 @@ def UpdateTargets(Targets, TrainingGame, MaxTarget):
         Targets.append(GetTarget(MaxTarget))
     return Targets
 
-def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
+def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed: List[int], UserInputInRPN: List[str], MaxNumber: int) -> bool:
     Temp = []
     for Item in NumbersAllowed:
         Temp.append(Item)
@@ -92,31 +97,31 @@ def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNu
                 return False            
     return True
 
-def CheckValidNumber(Item, MaxNumber):
+def CheckValidNumber(Item: str, MaxNumber: int) -> bool:
     if re.search("^[0-9]+$", Item) is not None:
         ItemAsInteger = int(Item)
         if ItemAsInteger > 0 and ItemAsInteger <= MaxNumber:
             return True            
     return False
     
-def DisplayState(Targets, NumbersAllowed, Score):
+def DisplayState(Targets: List[int], NumbersAllowed: List[int], Score: int) -> None:
     DisplayTargets(Targets)
     DisplayNumbersAllowed(NumbersAllowed)
     DisplayScore(Score)    
 
-def DisplayScore(Score):
+def DisplayScore(Score: int) -> None:
     print("Current score: " + str(Score))
     print()
     print()
     
-def DisplayNumbersAllowed(NumbersAllowed):
+def DisplayNumbersAllowed(NumbersAllowed: List[int]) -> None:
     print("Numbers available: ", end = '')
     for N in NumbersAllowed:
         print(str(N) + "  ", end = '')
     print()
     print()
     
-def DisplayTargets(Targets):
+def DisplayTargets(Targets: List[int]) -> None:
     print("|", end = '')
     for T in Targets:
         if T == -1:
@@ -127,7 +132,7 @@ def DisplayTargets(Targets):
     print()
     print()
 
-def ConvertToRPN(UserInput):
+def ConvertToRPN(UserInput: str) -> List[str]:
     Position = 0
     Precedence = {"+": 2, "-": 2, "*": 4, "/": 4}
     Operators = []
@@ -153,7 +158,7 @@ def ConvertToRPN(UserInput):
                 Operators.pop()
     return UserInputInRPN
 
-def EvaluateRPN(UserInputInRPN):
+def EvaluateRPN(UserInputInRPN: List[str]) -> int:
     S = []
     while len(UserInputInRPN) > 0:
         while UserInputInRPN[0] not in ["+", "-", "*", "/"]:
@@ -179,7 +184,7 @@ def EvaluateRPN(UserInputInRPN):
     else:
         return -1
 
-def GetNumberFromUserInput(UserInput, Position):
+def GetNumberFromUserInput(UserInput: str, Position: int) -> Tuple[int, int]:
     Number = ""
     MoreDigits = True
     while MoreDigits:
@@ -195,19 +200,19 @@ def GetNumberFromUserInput(UserInput, Position):
     else:
         return int(Number), Position    
 
-def CheckIfUserInputValid(UserInput):
+def CheckIfUserInputValid(UserInput: str) -> bool:
     if re.search("^([0-9]+[\\+\\-\\*\\/])+[0-9]+$", UserInput) is not None:
         return True
     else:
         return False
 
-def GetTarget(MaxTarget):
+def GetTarget(MaxTarget: int) -> int:
     return random.randint(1, MaxTarget)
     
-def GetNumber(MaxNumber):
+def GetNumber(MaxNumber: int) -> int:
     return random.randint(1, MaxNumber)   
 
-def CreateTargets(SizeOfTargets, MaxTarget):
+def CreateTargets(SizeOfTargets: int, MaxTarget: int) -> List[int]:
     Targets = []
     for Count in range(1, 6):
         Targets.append(-1)
@@ -215,7 +220,7 @@ def CreateTargets(SizeOfTargets, MaxTarget):
         Targets.append(GetTarget(MaxTarget))
     return Targets
     
-def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
+def FillNumbers(NumbersAllowed: List[int], TrainingGame: bool, MaxNumber: int) -> List[int]:
     if TrainingGame:
         return [2, 3, 2, 8, 512]
     else:
