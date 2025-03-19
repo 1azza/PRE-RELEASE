@@ -28,15 +28,25 @@ def Main():
     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
+
+
+def MoveTargetsBack(Targets):
+    EndTargets = [-1,-1]
+    EndTargets.extend(Targets[:-2])
+    return EndTargets
     
 def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
     while not GameOver:
         DisplayState(Targets, NumbersAllowed, Score)
-        UserInput = input("Enter an expression: ")
+        UserInput = input("Enter an expression or MOVE to move the targets list: ")
         print()
-        if CheckIfUserInputValid(UserInput):
+        if UserInput == "MOVE":
+            Targets = MoveTargetsBack(Targets)
+            Score -= 2
+            
+        elif CheckIfUserInputValid(UserInput):
             UserInputInRPN = ConvertToRPN(UserInput)
             if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
                 IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
