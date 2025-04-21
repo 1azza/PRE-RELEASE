@@ -4,8 +4,8 @@
 #developed in the Python 3.9 programming environment
 
 import re
-import random
 import math
+import secrets
 
 def Main():
     NumbersAllowed = []
@@ -202,10 +202,10 @@ def CheckIfUserInputValid(UserInput):
         return False
 
 def GetTarget(MaxTarget):
-    return random.randint(1, MaxTarget)
+    return secrets.SystemRandom().randint(1, MaxTarget)
     
 def GetNumber(MaxNumber):
-    return random.randint(1, MaxNumber)   
+    return secrets.SystemRandom().randint(1, MaxNumber)   
 
 def CreateTargets(SizeOfTargets, MaxTarget):
     Targets = []
